@@ -1,0 +1,59 @@
+CODE:
+Admin VM Terminal
+# Set hostname for Admin VM
+sudo hostnamectl set-hostname admin
+
+# Edit /etc/hosts to add entries for VM1 and VM2
+sudo nano /etc/hosts
+
+# Add the following lines (replace IPs with your VM IPs):
+192.168.111.129 vm1
+192.168.111.130 vm2
+
+# Generate SSH key pair
+ssh-keygen -t rsa -b 4096
+
+# Copy public key to VM1 and VM2
+ssh-copy-id ubuntu@vm1
+ssh-copy-id ubuntu@vm2
+
+# Verify passwordless SSH
+ssh vm1 hostname
+ssh vm2 hostname
+
+# Edit crontab file to add scheduled tasks
+crontab -e
+
+# Add the following entries:
+*/1 * * * * ssh vm1 'date >> /home/ubuntu/cloud_task.log'
+*/1 * * * * ssh vm2 'date >> /home/ubuntu/cloud_task.log'
+
+------------------------------------------------------------------
+VM1 and VM2 Terminals
+# Set hostnames
+sudo hostnamectl set-hostname vm1
+# or
+sudo hostnamectl set-hostname vm2
+
+# Update package lists and install openssh-server
+sudo apt update
+sudo apt install openssh-server -y
+
+# Enable and start the SSH service
+sudo systemctl enable ssh
+sudo systemctl start ssh
+
+# Check SSH service status
+sudo systemctl status ssh
+
+# Get IP address
+ip a
+--------------------------------------------
+
+OUTPUT
+cloud_task.log
+
+Fri Sep 19 1:00:01 PM IST 2025
+Fri Sep 19 1:01:02 PM IST 2025
+Fri Sep 19 1:02:01 PM IST 2025
+Fri Sep 19 1:03:01 PM IST 2025

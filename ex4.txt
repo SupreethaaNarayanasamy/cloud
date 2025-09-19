@@ -1,0 +1,60 @@
+CODE:
+VM 1 Terminal
+# Get IP address of VM1
+ip a
+# Output:
+# ...
+# 192.168.111.129
+# ...
+# Update package lists and install Apache2
+sudo apt update
+sudo apt install apache2 -y
+
+# Create unique index.html file
+echo "This is VM 1" | sudo tee /var/www/html/index.html
+VM 2 Terminal
+# Get IP address of VM2
+ip a
+# Output:
+# ...
+# 192.168.111.130
+# ...
+
+# Update package lists and install Apache2
+sudo apt update
+sudo apt install apache2 -y
+
+# Create unique index.html file
+echo "This is VM 2" | sudo tee /var/www/html/index.html
+
+--------------------------------------------------------------------
+CODE:
+Admin VM Terminal
+# Get IP address of Admin VM
+ip a
+# Output:
+# ...
+# 192.168.111.128
+# ...
+
+# Update package lists and install HAProxy
+sudo apt update
+sudo apt install haproxy -y
+
+# Edit HAProxy configuration file
+sudo nano /etc/haproxy/haproxy.cfg
+
+# Add the following lines to the end of the file:
+frontend http_front
+    bind *:80
+    default_backend http_back
+backend http_back
+    balance roundrobin
+    server web1 192.168.111.129:80 check
+    server web2 192.168.111.130:80 check
+
+# Save and exit nano
+# Press Ctrl+O, Enter, and then Ctrl+X
+
+# Restart HAProxy service
+sudo systemctl restart haproxy
