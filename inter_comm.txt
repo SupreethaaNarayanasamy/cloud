@@ -1,0 +1,38 @@
+server.py
+
+----------------------------
+import socket
+
+s = socket.socket()
+s.bind(('localhost', 12345))
+s.listen(1)
+print("Server listening...")
+
+conn, addr = s.accept()
+data = conn.recv(1024).decode()
+numbers = list(map(int, data.strip().split()))
+total = sum(numbers)
+conn.send(str(total).encode())
+conn.close()
+-----------------------------------
+
+client .py
+
+-----------------------------------
+import socket
+
+def main():
+    data = input("Enter numbers separated by spaces: ")
+    s = socket.socket()
+   
+    s.connect(('localhost', 12345))
+    s.send(data.encode())
+   
+    result = s.recv(1024).decode()
+    print("Sum received from server:", result)
+
+    s.close()
+
+if __name__ == "__main__":
+    main()
+------------------------------------
